@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 . /etc/os-release
-[[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo 'Requires Ubuntu 24.04'; exit 1; }
 sudo apt-get update
 sudo apt-get install -y fontconfig openjdk-21-jre ca-certificates curl
 sudo install -d -m 0755 /etc/apt/keyrings
