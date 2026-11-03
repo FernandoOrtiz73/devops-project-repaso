@@ -1,0 +1,21 @@
+Comprobaciones realizadas sobre los archivos entregados:
+
+PASS: parseo HCL de main.tf y variables.tf.
+PASS: terraform fmt -check (Terraform 1.13.5).
+PASS: terraform init -backend=false; proveedor hashicorp/aws 6.71.0 descargado y firmado.
+PASS: parseo YAML de los dos playbooks y requirements.yml.
+PASS: ansible-playbook install_docker.yml --syntax-check.
+PASS: ansible-playbook deploy_nginx.yml --syntax-check, con community.docker 4.8.9.
+      Ansible Core utilizado: 2.19.15.
+PASS: bash -n de setup_ubuntu.sh e install_jenkins.sh.
+PASS: compilación del script Python de inventario; IPv4 válida aceptada y entrada inválida rechazada.
+
+LIMITACIÓN: terraform validate no pudo completar la carga del esquema del proveedor.
+El proveedor falló al crear su socket Unix con "socket: operation not permitted"
+por una restricción del entorno de comprobación. No se afirma que esta validación haya pasado.
+Ejecutar terraform validate y terraform plan en la VM Ubuntu antes de apply.
+
+NO EJECUTADO: instalación en Ubuntu, Docker build/run, despliegue AWS,
+playbooks sobre EC2, pipeline Jenkins y prueba HTTP de extremo a extremo.
+Jenkinsfile fue revisado manualmente; no se ejecutó el validador de Jenkins.
+No se utilizaron credenciales del usuario ni se crearon recursos cloud.

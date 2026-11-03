@@ -1,0 +1,2 @@
+[web]
+# Generate hosts with: python3 scripts/make_inventory.py

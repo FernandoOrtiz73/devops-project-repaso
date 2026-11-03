@@ -1,0 +1,31 @@
+---
+- name: Prepare the fresh Ubuntu EC2 instance
+  hosts: web
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH and Python
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+
+    - name: Gather system facts
+      ansible.builtin.setup:
+
+    - name: Install Ubuntu's Docker package and module dependencies
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-requests
+        state: present
+        update_cache: true
+        lock_timeout: 300
+      register: packages
+      until: packages is succeeded
+      retries: 3
+      delay: 10
+
+    - name: Start Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true

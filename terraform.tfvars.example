@@ -1,0 +1,4 @@
+aws_region       = "us-west-2"
+ubuntu_ami_id    = "REPLACE_WITH_UBUNTU_24_04_AMD64_AMI"
+ssh_allowed_cidr = "REPLACE_WITH_YOUR_PUBLIC_IPV4/32"
+public_key_path  = "~/.ssh/devitaly_ec2.pub"

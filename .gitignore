@@ -1,0 +1,17 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+hosts
+inventory.generated.ini
+known_hosts.ec2
+*.pem
+*.key
+*.pub
+.env
+.venv/
+__pycache__/
+*.retry
+versions.local.txt
+# Commit .terraform.lock.hcl after terraform init. Never commit private keys.

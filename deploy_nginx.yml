@@ -1,0 +1,62 @@
+---
+- name: Deploy a versioned image and verify the website
+  hosts: web
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Require an explicit image tag
+      ansible.builtin.assert:
+        that:
+          - image_name is defined
+          - "':' in (image_name | default(''))"
+        fail_msg: "Pass -e image_name=DOCKERHUB_USER/devitaly:TAG"
+
+    - name: Ensure Docker is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Download the image, optionally using private registry credentials
+      block:
+        - name: Authenticate on EC2 if a token was supplied
+          community.docker.docker_login:
+            username: "{{ lookup('ansible.builtin.env', 'DOCKERHUB_USER') }}"
+            password: "{{ lookup('ansible.builtin.env', 'DOCKERHUB_TOKEN') }}"
+          when: lookup('ansible.builtin.env', 'DOCKERHUB_TOKEN') | length > 0
+          no_log: true
+
+        - name: Pull the specified image
+          community.docker.docker_image:
+            name: "{{ image_name }}"
+            source: pull
+            force_source: true
+      always:
+        - name: Remove registry login from this dedicated EC2 host
+          community.docker.docker_login:
+            state: absent
+          when: lookup('ansible.builtin.env', 'DOCKERHUB_TOKEN') | length > 0
+          no_log: true
+
+    - name: Run Nginx
+      community.docker.docker_container:
+        name: devitaly-web
+        image: "{{ image_name }}"
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "80:80"
+
+    - name: Verify HTTP status and content from the Ansible controller
+      ansible.builtin.uri:
+        url: "http://{{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}/"
+        status_code: 200
+        return_content: true
+        timeout: 10
+        use_proxy: false
+      delegate_to: localhost
+      become: false
+      register: web_response
+      until: (web_response.status | default(0) == 200) and ('Hola DevOps' in (web_response.content | default('')))
+      retries: 12
+      delay: 5
