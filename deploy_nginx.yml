@@ -57,6 +57,6 @@
       delegate_to: localhost
       become: false
       register: web_response
-      until: (web_response.status | default(0) == 200) and ('Hola DevOps' in (web_response.content | default('')))
+      until: (web_response.status | default(0) == 200) and ('Hello' in (web_response.content | default('')))
       retries: 12
       delay: 5
